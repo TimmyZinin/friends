@@ -1,158 +1,186 @@
-# Friends — System Design Document (SDD)
+# Friends Protocol — System Design Document (SDD)
 
-> Status: DRAFT v0.2 — post Expert Panel + Codex Adversarial
-> Version: 0.2
-> Date: 2026-04-09
+> Версия: 1.0 | Дата: 2026-04-09
+> Статус: Draft для обсуждения с Денисом
+> Авторы: Тим Зинин, Денис Говорунов
+> Источник: Standard Recording 10 + Expert Panel (7 экспертов, 35 идей)
 
-## 1. Vision
+---
 
-A knowledge networking protocol that connects people based on their intellectual fingerprint — not photos or bios. Distributed as a Claude Code skill, with privacy-by-design architecture.
+## 1. Резюме
 
-## 2. Problem Statement
+**Friends Protocol** — открытый протокол нетворкинга по знаниям. Соединяет людей по интеллектуальному отпечатку, а не по фотографиям или анкетам. Данные обрабатываются на устройстве пользователя (zero-knowledge). Matching engine получает только необратимое представление (Bloom filter). Распространяется как Claude Code скилл через GitHub.
 
-Current networking apps:
-- Rely on photos → discrimination, catfishing, superficiality
-- Store all personal data centrally → privacy nightmare
-- Use manual questionnaires → people lie
-- No way to match on "how you think" or "what you know"
+**Ключевые решения:**
+- Networking, не dating (меньше регуляций, шире аудитория)
+- Bloom filter вместо embeddings (реально privacy-preserving)
+- Протокол, не приложение (третьи стороны строят поверх)
+- Блокчейн — следующая фаза, не MVP
 
-## 3. Solution
+## 2. Видение и проблема
 
-### 3.1 User Flow
+### Проблема
+Люди хотят находить единомышленников, но существующие платформы оптимизированы под engagement (время в приложении), а не под качество связей. Результат: поверхностные контакты, дискриминация по внешности, утечки личных данных.
+
+### Видение
+> *"Найди друга, о котором ты не знал"*
+
+Мир, где каждый может найти людей, чьё мышление резонирует с его собственным — без раскрытия личных данных, без посредников, без алгоритмов, оптимизированных под рекламу.
+
+## 3. Функциональные требования
+
+### FR-1: Сбор данных (клиент)
+- Скилл сканирует markdown-файлы с явного разрешения пользователя
+- Поддержка дополнительных источников: Telegram export, Discord, Slack, Notion, закладки браузера
+- Произвольные текстовые файлы через unified pipeline
+- Геолокация (opt-in, city-level)
+
+### FR-2: Кодирование (клиент)
+- Извлечение тем через TF-IDF (MVP) или локальную LLM (Phase 2)
+- Кодирование в Bloom filter (1024 бит, MurmurHash3 x 5)
+- Подпись Ed25519
+
+### FR-3: Matching (сервер)
+- Jaccard similarity на Bloom filters
+- Top-K (max 20) с threshold >0.15
+- Feedback loop: thumbs up/down корректирует веса (Phase 2)
+
+### FR-4: Визуализация
+- Интерактивный D3.js force-directed граф
+- Клик на узел → информация + Telegram link
+- Responsive (desktop + mobile)
+
+### FR-5: Identity
+- Ed25519 keypair генерируется на клиенте
+- Только владелец ключа может обновить/удалить профиль
+- GDPR: право на удаление через DELETE /profile
+
+### FR-6: Коммуникация
+- После матча — связь через Telegram (deep link)
+- Conversation starter: общая тема для начала диалога (Phase 2)
+
+## 4. Нефункциональные требования
+
+| Требование | Значение | Примечание |
+|-----------|---------|-----------|
+| Латентность matching | <100ms при 10K users | Bloom filter comparison = O(n) |
+| Доступность | 99.5% uptime | Contabo VPS, Docker restart policy |
+| Масштаб MVP | 1,000 пользователей | SQLite, single server |
+| Масштаб Phase 2 | 10,000 пользователей | Postgres, возможно LSH indexing |
+| Масштаб Phase 3 | 100,000 пользователей | Horizontal scaling, sharding |
+| Bloom filter размер | 128 байт (1024 бит) | Фиксированный для всех |
+| API response time | <200ms p95 | Включая network |
+| Data retention | До DELETE запроса | GDPR compliant |
+
+## 5. Архитектура системы
+
+```mermaid
+flowchart TB
+    subgraph "Устройство пользователя"
+        SKILL["/friends скилл"]
+        FILES["Файлы: md, chats, bookmarks"]
+        NLP["NLP: TF-IDF extraction"]
+        BF["Bloom Filter Encoder"]
+        KEY["Ed25519 Keypair"]
+    end
+
+    subgraph "Matching Server (Contabo)"
+        API["FastAPI"]
+        DB["SQLite / Postgres"]
+        MATCH["Matching Engine"]
+    end
+
+    subgraph "Клиент"
+        GRAPH["D3.js Graph"]
+        TG["Telegram Connect"]
+    end
+
+    FILES --> SKILL
+    SKILL --> NLP
+    NLP --> BF
+    BF --> KEY
+    KEY -->|"signed bloom filter"| API
+    API --> DB
+    API --> MATCH
+    MATCH --> API
+    API -->|"Top-K matches"| GRAPH
+    GRAPH --> TG
 ```
-User installs /friends skill
-    → Skill scans local markdown files (with explicit permission)
-    → Extracts topic tags locally (keyword extraction + TF-IDF)
-    → Encodes tags into a weighted Bloom filter (on device)
-    → Sends ONLY the Bloom filter to matching server
-    → Server computes Jaccard similarity against other Bloom filters
-    → Top-K matches returned
-    → Opens browser with interactive 2D graph
-    → User clicks node → sees info the other person chose to share → connects via TG
-```
 
-### 3.2 Data Sources — MVP (Phase 1-2)
+## 6. Технологический стек
 
-| Source | What we extract | What crosses the wire |
-|--------|----------------|----------------------|
-| Markdown files (*.md) | Topic tags, keywords | Bloom filter (not invertible) |
-| Claude session history | Conversation themes | Bloom filter (not invertible) |
-| Location (opt-in) | City-level only | City name string |
+| Компонент | Технология | Почему |
+|-----------|-----------|--------|
+| Скилл | TypeScript (Claude Code native) | Нативная интеграция с MCP |
+| NLP (MVP) | TF-IDF (jieba/nltk) | Лёгкий, 0 зависимостей |
+| NLP (Phase 2) | Ollama + Llama 3 | Лучшее качество, локально |
+| Bloom filter | Чистый JS/Python | 0 зависимостей |
+| Identity | Ed25519 (tweetnacl-js) | Стандарт, маленький, быстрый |
+| Сервер | FastAPI (Python) | Быстрый, async, typed |
+| БД (MVP) | SQLite | Простота, 0 настройки |
+| БД (Phase 2) | PostgreSQL | Масштабирование |
+| Визуализация | D3.js v7 | Стандарт для графов |
+| Лендинг | Статический HTML/JS | GitHub Pages, 0 стоимость |
+| Хостинг | Contabo VPS 30 | Уже оплачен |
+| CI/CD | GitHub Actions | Бесплатно для public repos |
 
-**Explicitly NOT in MVP scope:**
-- ~~DNA tests~~ — removed (legal: GDPR Art.9, GINA; market: Pheramor failure; PR risk)
-- ~~Wearables / health data~~ — removed (medical data regulations, HIPAA)
-- ~~Income inference~~ — removed permanently (ethically toxic, technically unproven, GDPR Art.22)
-- ~~Blockchain~~ — not in public-facing architecture or messaging
+## 7. Фазы развития
 
-> **Future data sources (Phase 3+ only, requires legal review):**
-> Wearables integration could be explored after product-market fit is proven and a dedicated legal review ($5-10K) is completed. DNA matching is indefinitely deferred.
+### Phase 1: MVP (Апрель-Май 2026)
+**Gate criteria для входа:** Документация готова, ревью Дениса пройдено
+- Лендинг с графом ✅
+- SDD документация ← в работе
+- Claude Code скилл (markdown only)
+- Centralized server (FastAPI + SQLite)
+- 30-50 alpha-пользователей
+- **Gate для Phase 2:** ≥20 installs, ≥3 "match surprised me" отзыва
 
-### 3.3 Matching Engine
+### Phase 2: Alpha (Июнь-Август 2026)
+**Gate criteria:** Phase 1 gates пройдены
+- Расширенные источники (Telegram, Discord, Slack exports)
+- Feedback loop (thumbs up/down)
+- Event matching (первый revenue)
+- Multi-agent support (Cursor, Windsurf)
+- Proximity matching (city-level)
+- **Gate для Phase 3:** ≥500 users, первый revenue
 
-**What the server receives:** Weighted Bloom filter (fixed-size bit array, not invertible to original text).
+### Phase 3: Protocol (Сентябрь-Декабрь 2026)
+**Gate criteria:** Phase 2 gates пройдены
+- Open-source Friends Protocol спец
+- Third-party клиенты
+- PSI вместо Bloom filters
+- Postgres + масштабирование
+- **Gate для Phase 4:** ≥5,000 users, $5K MRR, юридический ревью лицензии
 
-**What the server stores:** Bloom filter + Ed25519 public key + optional display name + optional Telegram handle.
+### Phase 4: Decentralization (2027+)
+**Gate criteria:** Phase 3 gates пройдены, юридический ревью
+- Смарт-контракты (identity, consent)
+- Token economics (protocol fees)
+- Node operators
+- DAO governance
 
-**What the server does NOT store:** Raw text, topic names, file contents, embeddings, location history.
+## 8. Стоимостная модель
 
-**Matching algorithm (MVP):**
-1. Client extracts topic tags from markdown files (TF-IDF or keyword extraction)
-2. Tags encoded into weighted Bloom filter on device
-3. Bloom filter sent to server via REST API (signed with Ed25519 private key)
-4. Server computes Jaccard similarity on Bloom filters
-5. Top-K matches returned with similarity scores
-6. Feedback (thumbs up/down) adjusts weight in future queries (Phase 2)
+| Масштаб | Инфра | Стоимость/мес | Cost per user |
+|---------|-------|--------------|---------------|
+| 100 users | Contabo VPS 30 (уже оплачен) | ~$0 (included) | $0 |
+| 1,000 users | Contabo VPS 30 | ~$0 | $0 |
+| 10,000 users | Contabo + Postgres | ~$20 | $0.002 |
+| 100,000 users | 3x VPS + managed Postgres | ~$200 | $0.002 |
 
-**Privacy claim (precise):** Topic extraction and encoding happen entirely on the user's device. The matching server receives only a Bloom filter — a fixed-size bit array that cannot be reversed to recover original topics. The server does not see, store, or process the user's files, text, or embeddings.
+Bloom filter storage: 128 bytes × 100K users = 12.8 MB. Matching: CPU-bound, не storage.
 
-### 3.4 Privacy Architecture
-```
-[Client Side]                         [Server Side]
-                                      
-Markdown files ─┐                     
-Claude sessions ─┤→ Topic extraction   
-                 │   (local, on device)
-                 ↓                     
-              TF-IDF / keywords        
-                 ↓                     
-           Bloom filter encoding       
-                 ↓                     
-           Ed25519 signature           
-                 ↓                     
-        ─── REST API ──────────→  Matching Engine
-                                  (Bloom filter store)
-                                  (Jaccard similarity)
-                                       ↓
-                                  Top-K results
-        ←── REST API ──────────       
-                 ↓                     
-           Graph visualization         
-           (browser, D3.js)            
+## 9. Ссылки на детальные документы
 
-Private key: ~/.friends/keypair.json (never transmitted)
-Bloom filter: fixed-size, not invertible
-Server: stateless matching, no raw data
-```
-
-## 4. Architecture Phases
-
-### Phase 1: MVP (current)
-- Landing page with interactive graph visualization (timzinin.com/friends/)
-- Concept documentation (SDD, expert panel, launch strategy)
-- Demo graph with synthetic data (clearly labeled, NOT from real users)
-
-### Phase 2: Centralized Alpha
-- FastAPI matching server on Contabo VPS 30
-- Claude Code skill (TypeScript) for local tag extraction
-- Bloom filter transmission via REST API
-- Ed25519 keypair for identity and consent
-- Telegram as communication channel after match
-- Basic feedback loop (thumbs up/down)
-
-### Phase 3: Protocol & Scale
-- Open-source "Friends Protocol" specification
-- Multi-agent support (Cursor, Windsurf, any MCP-compatible)
-- Event matching for conferences (Telegram group analysis)
-- Evaluate decentralization IF >10K users AND proven demand
-
-## 5. Tech Stack (planned)
-
-| Component | Technology |
-|-----------|-----------|
-| Skill | Claude Code skill (TypeScript) |
-| Client encoding | TF-IDF keyword extraction → Bloom filter |
-| Matching engine | FastAPI (Python) on Contabo VPS 30 |
-| Database | SQLite (upgrade to Postgres at >10K users) |
-| Visualization | D3.js force-directed graph |
-| Landing page | Static HTML/JS on GitHub Pages |
-| Identity | Ed25519 keypair (local) |
-| Communication | REST API (skill → server) |
-
-## 6. Monetization
-
-### MVP: Free (no monetization)
-Goal is network effect and validation.
-
-### Phase 2-3 options (pick one):
-1. **Event matching ($2/participant)** — conference organizers pay for attendee matching. Solves cold start.
-2. **Verified profiles ($5/mo)** — identity verification badge, priority in matching.
-3. **Team matching (B2B, $20/seat/mo)** — companies match employees for projects/mentoring.
-
-**Explicitly removed:** Token economics, DNA test commissions, blockchain-native monetization.
-
-## 7. Open Questions
-
-- [ ] Bloom filter parameters: optimal size and hash count for topic matching?
-- [ ] Minimum viable topic count per user for meaningful matching?
-- [ ] How to handle users with very few markdown files?
-- [ ] Sybil attack prevention without centralized identity?
-- [ ] GDPR data processing agreement template
-- [ ] Event matching: technical approach for Telegram group analysis?
-
-## 8. References
-
-- [Origin Transcript](origin-transcript.md) — brainstorm recording (Tim + Denis)
-- [Expert Panel Results](expert-panel-results.md) — 7-expert analysis, 35 ideas reviewed
-- [Launch Strategy](launch-strategy.md) — 5-phase plan, ORB channels, $0 budget
-- Codex Adversarial Review — 2026-04-09 (3 findings addressed in v0.2)
+| Документ | Описание |
+|---------|---------|
+| [PRODUCT_VISION.md](PRODUCT_VISION.md) | Видение, персоны, конкуренты, фазы |
+| [ZK_ARCHITECTURE.md](ZK_ARCHITECTURE.md) | Zero-Knowledge архитектура, Bloom filters, PSI, FHE roadmap |
+| [PROTOCOL_SPEC.md](PROTOCOL_SPEC.md) | Слои протокола, формат сообщений, extensibility |
+| [API_SPEC.md](API_SPEC.md) | REST эндпоинты, схемы запросов/ответов |
+| [BLOCKCHAIN_ROADMAP.md](BLOCKCHAIN_ROADMAP.md) | Блокчейн фазы, смарт-контракты, токеномика |
+| [LICENSING.md](LICENSING.md) | BSL лицензия, IP-защита, trademark |
+| [SECURITY.md](SECURITY.md) | Модель угроз, GDPR compliance |
+| [launch-strategy.md](launch-strategy.md) | GTM план, 5 фаз, каналы |
+| [expert-panel-results.md](expert-panel-results.md) | 35 идей из брейншторма, экспертная оценка |
+| [origin-transcript.md](origin-transcript.md) | Оригинальная транскрипция разговора |
