@@ -1,0 +1,106 @@
+[
+  {
+    "id": "you",
+    "name": "You",
+    "topics": ["your mind", "your ideas", "your knowledge"],
+    "telegram": "",
+    "isUser": true,
+    "group": 0
+  },
+  {
+    "id": "demo-1",
+    "name": "Alex K.",
+    "topics": ["distributed systems", "Rust", "category theory"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 1
+  },
+  {
+    "id": "demo-2",
+    "name": "Maria S.",
+    "topics": ["computational neuroscience", "Python", "meditation"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 2
+  },
+  {
+    "id": "demo-3",
+    "name": "Kai T.",
+    "topics": ["generative art", "WebGL", "philosophy of mind"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 1
+  },
+  {
+    "id": "demo-4",
+    "name": "Priya M.",
+    "topics": ["mechanism design", "game theory", "Solidity"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 3
+  },
+  {
+    "id": "demo-5",
+    "name": "Jonas R.",
+    "topics": ["type systems", "Haskell", "formal verification"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 1
+  },
+  {
+    "id": "demo-6",
+    "name": "Lena W.",
+    "topics": ["human-computer interaction", "accessibility", "design systems"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 2
+  },
+  {
+    "id": "demo-7",
+    "name": "Omar F.",
+    "topics": ["information security", "cryptography", "CTF competitions"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 3
+  },
+  {
+    "id": "demo-8",
+    "name": "Yuki N.",
+    "topics": ["robotics", "control theory", "origami mathematics"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 2
+  },
+  {
+    "id": "demo-9",
+    "name": "Sofia L.",
+    "topics": ["NLP", "transformer architectures", "poetry generation"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 1
+  },
+  {
+    "id": "demo-10",
+    "name": "Erik B.",
+    "topics": ["systems biology", "graph databases", "data visualization"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 2
+  },
+  {
+    "id": "demo-11",
+    "name": "Anya P.",
+    "topics": ["quantum computing", "linear algebra", "science fiction"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 3
+  },
+  {
+    "id": "demo-12",
+    "name": "Rashid A.",
+    "topics": ["compiler design", "LLVM", "music production"],
+    "telegram": "@demo",
+    "isUser": false,
+    "group": 1
+  }
+]
