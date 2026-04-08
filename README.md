@@ -1,45 +1,53 @@
-# Friends
+# Friends Protocol
 
-**Find the friend you didn't know existed.**
+**Найди друга, о котором ты не знал.**
 
-Friends is a knowledge networking protocol that connects people based on their intellectual fingerprint — extracted from markdown files and AI conversations. Not by photos, not by bios, not by swiping.
+Friends Protocol — открытый протокол нетворкинга по знаниям. Соединяет людей по интеллектуальному отпечатку — из markdown-файлов, AI-диалогов, переписок и заметок. Без фото, без анкет, без свайпов.
 
-## How it works
+## Как это работает
 
-1. **Install the `/friends` skill** in Claude Code
-2. The skill **extracts topic tags** from your local markdown files (on your device)
-3. Tags are encoded into a **Bloom filter** (a compact, non-reversible representation)
-4. Only the Bloom filter is sent to the matching server — your files stay on your device
-5. You see a **live graph** of compatible people
-6. Click a node → see what they chose to share → connect via Telegram
+1. Установи скилл `/friends` в Claude Code
+2. Скилл извлекает темы из твоих локальных файлов (на устройстве)
+3. Темы кодируются в **Bloom filter** (необратимый битовый массив)
+4. Только Bloom filter отправляется на matching server
+5. Видишь **интерактивный граф** совместимых людей
+6. Кликни на узел → свяжись через Telegram
 
-## Privacy
+## Приватность
 
-Topic extraction and encoding happen entirely on your device. The matching server receives only a Bloom filter — a fixed-size bit array that cannot be reversed to recover your original topics. The server does not see, store, or process your files, text, or raw data.
+Извлечение тем и кодирование происходят **полностью на устройстве**. Сервер получает только Bloom filter — битовый массив фиксированного размера, который невозможно обратить в исходные темы. Сервер не видит, не хранит и не обрабатывает файлы, текст или сырые данные.
 
-See [docs/SDD.md](docs/SDD.md) for the full technical privacy architecture.
+## Документация (SDD)
 
-## Data Sources (MVP)
+| Документ | Описание |
+|---------|---------|
+| [SDD.md](docs/SDD.md) | System Design Document v1.0 — полная спецификация |
+| [PRODUCT_VISION.md](docs/PRODUCT_VISION.md) | Видение продукта, персоны, конкуренты |
+| [ZK_ARCHITECTURE.md](docs/ZK_ARCHITECTURE.md) | Zero-Knowledge архитектура: Bloom → PSI → FHE → ZK-proofs |
+| [PROTOCOL_SPEC.md](docs/PROTOCOL_SPEC.md) | Спецификация Friends Protocol (5 слоёв) |
+| [API_SPEC.md](docs/API_SPEC.md) | REST API — 7 эндпоинтов |
+| [BLOCKCHAIN_ROADMAP.md](docs/BLOCKCHAIN_ROADMAP.md) | Блокчейн: смарт-контракты, токеномика, фазы |
+| [LICENSING.md](docs/LICENSING.md) | Лицензирование и IP-защита |
+| [SECURITY.md](docs/SECURITY.md) | Модель угроз + GDPR compliance |
+| [launch-strategy.md](docs/launch-strategy.md) | GTM: 5 фаз, каналы, метрики |
+| [expert-panel-results.md](docs/expert-panel-results.md) | 35 идей из брейншторма — экспертная оценка |
 
-- Markdown files (`*.md`) — topics, interests, thinking patterns
-- Claude session history — conversation themes
-- Location (opt-in, city-level only)
+## Wiki
 
-## Architecture
+Страницы с Mermaid-диаграммами: [wiki/](wiki/)
 
-See [docs/SDD.md](docs/SDD.md) for the System Design Document.
+## Лендинг
 
-## Status
+[timzinin.com/friends](https://timzinin.com/friends/) — интерактивный граф (EN/RU)
 
-🔬 Concept phase — MVP landing page in development.
+## Статус
 
-## Docs
+- ✅ SDD документация v1.0
+- ✅ MVP лендинг с графом
+- 🔧 Claude Code скилл (в разработке)
+- 📋 Matching server (планируется)
 
-- [System Design Document](docs/SDD.md)
-- [Expert Panel Results](docs/expert-panel-results.md) — 35 ideas from brainstorm analyzed by 7-expert panel
-- [Launch Strategy](docs/launch-strategy.md) — 5-phase go-to-market plan
+## Авторы
 
-## Authors
-
-- [Tim Zinin](https://github.com/TimmyZinin)
-- Denis Govorunov
+- [Тим Зинин](https://github.com/TimmyZinin)
+- Денис Говорунов
