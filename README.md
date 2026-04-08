@@ -28,7 +28,10 @@ Friends Protocol — открытый протокол нетворкинга п
 | [API_SPEC.md](docs/API_SPEC.md) | REST API — 7 эндпоинтов |
 | [BLOCKCHAIN_ROADMAP.md](docs/BLOCKCHAIN_ROADMAP.md) | Блокчейн: смарт-контракты, токеномика, фазы |
 | [LICENSING.md](docs/LICENSING.md) | Лицензирование и IP-защита |
+| [DIGITAL_DNA.md](docs/DIGITAL_DNA.md) | Концепция Цифрового ДНК (брейндамп Дениса) |
+| [DNA_STRUCTURE.md](docs/DNA_STRUCTURE.md) | 3 слоя ДНК: структурный + социальный + интенциональный |
 | [SECURITY.md](docs/SECURITY.md) | Модель угроз + GDPR compliance |
+| [BACKLOG_PHASE1.md](docs/BACKLOG_PHASE1.md) | Phase 1: 5 спринтов, 43 задачи |
 | [launch-strategy.md](docs/launch-strategy.md) | GTM: 5 фаз, каналы, метрики |
 | [expert-panel-results.md](docs/expert-panel-results.md) | 35 идей из брейншторма — экспертная оценка |
 
