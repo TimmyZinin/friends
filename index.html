@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,6 +28,7 @@
   --text-dim: #7a8299;
   --coral: #c5380e;
   --amber: #e6a817;
+  --violet: #6b5ce7;
   --serif: 'Instrument Serif', Georgia, serif;
   --sans: 'Space Grotesk', system-ui, sans-serif;
   --mono: 'JetBrains Mono', monospace;
@@ -45,7 +46,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Grain overlay ── */
 body::after {
   content: '';
   position: fixed;
@@ -54,6 +54,43 @@ body::after {
   z-index: 9999;
   opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* ── LANG SWITCHER ── */
+.lang-switch {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(6, 8, 12, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+.lang-switch button {
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--text-dim);
+  border: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.lang-switch button.active {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.lang-switch button:not(.active):hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
 }
 
 /* ── HERO ── */
@@ -75,14 +112,23 @@ body::after {
   z-index: 0;
 }
 
+/* Dark vignette behind hero text */
+.hero-backdrop {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 55% 50% at 50% 42%, rgba(6,8,12,0.92) 0%, rgba(6,8,12,0.6) 50%, transparent 80%);
+  pointer-events: none;
+}
+
 .hero-content {
   position: relative;
   z-index: 2;
   text-align: center;
   padding: 0 24px;
   pointer-events: none;
-  margin-top: -12vh;
-  text-shadow: 0 2px 40px rgba(6, 8, 12, 0.9), 0 0 80px rgba(6, 8, 12, 0.7);
+  margin-top: -8vh;
 }
 
 .hero-tag {
@@ -140,24 +186,11 @@ body::after {
   transition: all 0.3s ease;
 }
 
-.btn-primary {
-  background: var(--accent);
-  color: var(--bg);
-}
-.btn-primary:hover {
-  background: #33ddff;
-  box-shadow: 0 0 30px var(--accent-glow);
-}
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { background: #33ddff; box-shadow: 0 0 30px var(--accent-glow); }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--text);
-  border: 1.5px solid rgba(255,255,255,0.15);
-}
-.btn-ghost:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
+.btn-ghost { background: transparent; color: var(--text); border: 1.5px solid rgba(255,255,255,0.15); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
 .scroll-hint {
   position: absolute;
@@ -193,277 +226,56 @@ body::after {
   transition: opacity 0.2s ease;
 }
 .node-popup.visible { opacity: 1; }
-
-.node-popup h3 {
-  font-family: var(--serif);
-  font-size: 20px;
-  margin-bottom: 8px;
-  color: var(--accent);
-}
-.node-popup .topics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.node-popup .topic-tag {
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  background: var(--accent-dim);
-  color: var(--accent);
-  white-space: nowrap;
-}
-.node-popup .tg {
-  font-size: 13px;
-  color: var(--text-dim);
-}
-.node-popup .demo-label {
-  font-size: 10px;
-  color: var(--text-dim);
-  opacity: 0.5;
-  margin-top: 6px;
-  font-family: var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
+.node-popup h3 { font-family: var(--serif); font-size: 20px; margin-bottom: 8px; color: var(--accent); }
+.node-popup .topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.node-popup .topic-tag { font-family: var(--mono); font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--accent-dim); color: var(--accent); white-space: nowrap; }
+.node-popup .tg { font-size: 13px; color: var(--text-dim); }
+.node-popup .demo-label { font-size: 10px; color: var(--text-dim); opacity: 0.5; margin-top: 6px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; }
 
 /* ── SECTIONS ── */
-section {
-  padding: clamp(80px, 12vw, 200px) 24px;
-}
-
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.section-tag {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 20px;
-}
-
-.section-title {
-  font-family: var(--serif);
-  font-size: clamp(36px, 5vw, 64px);
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  margin-bottom: 24px;
-}
-
-.section-desc {
-  font-size: clamp(16px, 1.4vw, 19px);
-  color: var(--text-dim);
-  max-width: 600px;
-  line-height: 1.6;
-  margin-bottom: 60px;
-}
+section { padding: clamp(80px, 12vw, 200px) 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.section-tag { font-family: var(--mono); font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+.section-title { font-family: var(--serif); font-size: clamp(36px, 5vw, 64px); font-weight: 400; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 24px; }
+.section-desc { font-size: clamp(16px, 1.4vw, 19px); color: var(--text-dim); max-width: 600px; line-height: 1.6; margin-bottom: 60px; }
 
 /* ── HOW IT WORKS ── */
-.how-section {
-  background: var(--bg-section);
-}
-
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
-}
-
-.step {
-  position: relative;
-  padding: 36px 28px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.02);
-  transition: border-color 0.3s, background 0.3s;
-}
-
-.step:hover {
-  border-color: rgba(0, 212, 255, 0.2);
-  background: rgba(0, 212, 255, 0.03);
-}
-
-.step-num {
-  font-family: var(--serif);
-  font-size: 48px;
-  color: var(--accent);
-  opacity: 0.3;
-  line-height: 1;
-  margin-bottom: 20px;
-}
-
-.step h3 {
-  font-family: var(--sans);
-  font-weight: 700;
-  font-size: 20px;
-  margin-bottom: 12px;
-  letter-spacing: -0.02em;
-}
-
-.step p {
-  font-size: 15px;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-
-.step code {
-  font-family: var(--mono);
-  font-size: 14px;
-  color: var(--accent);
-  background: var(--accent-dim);
-  padding: 2px 8px;
-  border-radius: 6px;
-}
+.how-section { background: var(--bg-section); }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.step { position: relative; padding: 36px 28px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); transition: border-color 0.3s, background 0.3s; }
+.step:hover { border-color: rgba(0, 212, 255, 0.2); background: rgba(0, 212, 255, 0.03); }
+.step-num { font-family: var(--serif); font-size: 48px; color: var(--accent); opacity: 0.3; line-height: 1; margin-bottom: 20px; }
+.step h3 { font-family: var(--sans); font-weight: 700; font-size: 20px; margin-bottom: 12px; letter-spacing: -0.02em; }
+.step p { font-size: 15px; color: var(--text-dim); line-height: 1.6; }
+.step code { font-family: var(--mono); font-size: 14px; color: var(--accent); background: var(--accent-dim); padding: 2px 8px; border-radius: 6px; }
 
 /* ── PRIVACY ── */
-.privacy-section {
-  background: var(--bg);
-}
-
-.privacy-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: start;
-}
-
-.privacy-text {
-  font-size: 17px;
-  line-height: 1.8;
-}
-
-.privacy-text .highlight {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.arch-diagram {
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 1.9;
-  color: var(--text-dim);
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 14px;
-  padding: 32px;
-  white-space: pre;
-  overflow-x: auto;
-}
-
+.privacy-section { background: var(--bg); }
+.privacy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+.privacy-text { font-size: 17px; line-height: 1.8; }
+.privacy-text .highlight { color: var(--accent); font-weight: 600; }
+.arch-diagram { font-family: var(--mono); font-size: 13px; line-height: 1.9; color: var(--text-dim); background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 32px; white-space: pre; overflow-x: auto; }
 .arch-diagram .accent { color: var(--accent); }
 .arch-diagram .dim { color: rgba(255,255,255,0.2); }
 .arch-diagram .coral { color: var(--coral); }
 
-/* ── CTA Section ── */
-.cta-section {
-  background: var(--bg-section);
-  text-align: center;
-}
-
-.cta-section .section-title {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.cta-section .section-desc {
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 40px;
-}
-
-.email-form {
-  display: flex;
-  gap: 12px;
-  max-width: 480px;
-  margin: 0 auto 32px;
-}
-
-.email-form input[type="email"] {
-  flex: 1;
-  padding: 14px 20px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.04);
-  color: var(--text);
-  font-family: var(--sans);
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-.email-form input[type="email"]:focus {
-  border-color: var(--accent);
-}
-
-.email-form input[type="email"]::placeholder {
-  color: var(--text-dim);
-}
-
-.email-form button {
-  padding: 14px 28px;
-  border: none;
-  border-radius: 10px;
-  background: var(--accent);
-  color: var(--bg);
-  font-family: var(--sans);
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-.email-form button:hover {
-  background: #33ddff;
-  box-shadow: 0 0 30px var(--accent-glow);
-}
-
-.github-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 32px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.12);
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 15px;
-  transition: all 0.3s;
-}
-
-.github-cta:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: 0 0 20px var(--accent-dim);
-}
-
-.github-cta svg {
-  width: 20px;
-  height: 20px;
-  fill: currentColor;
-}
+/* ── CTA ── */
+.cta-section { background: var(--bg-section); text-align: center; }
+.cta-section .section-title { margin-left: auto; margin-right: auto; }
+.cta-section .section-desc { margin-left: auto; margin-right: auto; margin-bottom: 40px; }
+.email-form { display: flex; gap: 12px; max-width: 480px; margin: 0 auto 32px; }
+.email-form input[type="email"] { flex: 1; padding: 14px 20px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: var(--text); font-family: var(--sans); font-size: 15px; outline: none; transition: border-color 0.3s; }
+.email-form input[type="email"]:focus { border-color: var(--accent); }
+.email-form input[type="email"]::placeholder { color: var(--text-dim); }
+.email-form button { padding: 14px 28px; border: none; border-radius: 10px; background: var(--accent); color: var(--bg); font-family: var(--sans); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; white-space: nowrap; }
+.email-form button:hover { background: #33ddff; box-shadow: 0 0 30px var(--accent-glow); }
+.github-cta { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.12); color: var(--text); text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.3s; }
+.github-cta:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 20px var(--accent-dim); }
+.github-cta svg { width: 20px; height: 20px; fill: currentColor; }
 
 /* ── FOOTER ── */
-footer {
-  padding: 60px 24px;
-  text-align: center;
-  color: var(--text-dim);
-  font-size: 14px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-}
-
-footer a {
-  color: var(--text);
-  text-decoration: none;
-}
+footer { padding: 60px 24px; text-align: center; color: var(--text-dim); font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+footer a { color: var(--text); text-decoration: none; }
 footer a:hover { color: var(--accent); }
 
 /* ── RESPONSIVE ── */
@@ -474,27 +286,35 @@ footer a:hover { color: var(--accent); }
   .hero-cta { flex-direction: column; align-items: center; }
   .arch-diagram { font-size: 11px; padding: 20px; }
   .hero h1 { font-size: clamp(36px, 9vw, 56px); }
+  .lang-switch { top: 16px; right: 16px; }
 }
 </style>
 </head>
 <body>
 
+<!-- ═══════ LANG SWITCHER ═══════ -->
+<div class="lang-switch">
+  <button class="active" data-lang-btn="en">EN</button>
+  <button data-lang-btn="ru">RU</button>
+</div>
+
 <!-- ═══════ HERO ═══════ -->
 <section class="hero">
   <svg id="graph-canvas"></svg>
+  <div class="hero-backdrop"></div>
   <div class="hero-content">
-    <p class="hero-tag">Knowledge Networking Protocol</p>
-    <h1>Find the <em>friend</em> you didn't know existed</h1>
-    <p class="hero-sub">No photos. No bios. No swiping. Match people by how they think — extracted from their markdown files and AI conversations.</p>
+    <p class="hero-tag" data-i18n="hero_tag">Knowledge Networking Protocol</p>
+    <h1 data-i18n="hero_title">Find the <em>friend</em> you didn't know existed</h1>
+    <p class="hero-sub" data-i18n="hero_sub">No photos. No bios. No swiping. Match people by how they think — extracted from their markdown files and AI conversations.</p>
     <div class="hero-cta">
-      <a href="#early-access" class="btn-primary">Get Early Access</a>
+      <a href="#early-access" class="btn-primary" data-i18n="cta_access">Get Early Access</a>
       <a href="https://github.com/TimmyZinin/friends" target="_blank" class="btn-ghost">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        Star on GitHub
+        <span data-i18n="cta_github">Star on GitHub</span>
       </a>
     </div>
   </div>
-  <div class="scroll-hint">scroll to explore</div>
+  <div class="scroll-hint" data-i18n="scroll_hint">scroll to explore</div>
 </section>
 
 <!-- Node popup -->
@@ -502,30 +322,30 @@ footer a:hover { color: var(--accent); }
   <h3 id="popup-name"></h3>
   <div class="topics" id="popup-topics"></div>
   <div class="tg" id="popup-tg"></div>
-  <div class="demo-label">Demo Profile</div>
+  <div class="demo-label" data-i18n="demo_label">Demo Profile</div>
 </div>
 
 <!-- ═══════ HOW IT WORKS ═══════ -->
 <section class="how-section">
   <div class="container">
-    <p class="section-tag">How It Works</p>
-    <h2 class="section-title">Three steps.<br>Zero friction.</h2>
-    <p class="section-desc">Install a skill. See your mind. Find minds like yours.</p>
+    <p class="section-tag" data-i18n="how_tag">How It Works</p>
+    <h2 class="section-title" data-i18n="how_title">Three steps.<br>Zero friction.</h2>
+    <p class="section-desc" data-i18n="how_desc">Install a skill. See your mind. Find minds like yours.</p>
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <h3>Install the skill</h3>
-        <p>Add <code>/friends</code> to your Claude Code session. One command. No signup, no app store, no credit card.</p>
+        <h3 data-i18n="step1_title">Install the skill</h3>
+        <p data-i18n="step1_text">Add <code>/friends</code> to your Claude Code session. One command. No signup, no app store, no credit card.</p>
       </div>
       <div class="step">
         <div class="step-num">2</div>
-        <h3>It reads your files locally</h3>
-        <p>The skill scans your markdown files on your device. Extracts topic tags. Encodes them into a Bloom filter. Your files never leave your machine.</p>
+        <h3 data-i18n="step2_title">It reads your files locally</h3>
+        <p data-i18n="step2_text">The skill scans your markdown files on your device. Extracts topic tags. Encodes them into a Bloom filter. Your files never leave your machine.</p>
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <h3>See your graph</h3>
-        <p>An interactive map of minds that resonate with yours. Click a node. See their topics. Connect via Telegram. Start talking.</p>
+        <h3 data-i18n="step3_title">See your graph</h3>
+        <p data-i18n="step3_text">An interactive map of minds that resonate with yours. Click a node. See their topics. Connect via Telegram. Start talking.</p>
       </div>
     </div>
   </div>
@@ -534,10 +354,10 @@ footer a:hover { color: var(--accent); }
 <!-- ═══════ PRIVACY ═══════ -->
 <section class="privacy-section">
   <div class="container">
-    <p class="section-tag">Privacy Architecture</p>
-    <h2 class="section-title">Your files stay<br>on your device.</h2>
+    <p class="section-tag" data-i18n="priv_tag">Privacy Architecture</p>
+    <h2 class="section-title" data-i18n="priv_title">Your files stay<br>on your device.</h2>
     <div class="privacy-grid">
-      <div class="privacy-text">
+      <div class="privacy-text" data-i18n="priv_text">
         <p>Topic extraction and encoding happen <span class="highlight">entirely on your device</span>. The matching server receives only a <span class="highlight">Bloom filter</span> — a fixed-size bit array that cannot be reversed to recover your original topics.</p>
         <br>
         <p>The server does not see, store, or process your files, text, or raw data. It computes similarity scores on compact bit arrays and returns your matches. That's it.</p>
@@ -545,7 +365,7 @@ footer a:hover { color: var(--accent); }
         <p>Your identity is secured by an Ed25519 keypair generated locally. Only you can update your profile. The private key never leaves your machine.</p>
       </div>
       <div class="arch-diagram"><span class="accent">YOUR DEVICE</span>                     <span class="dim">|</span>  <span class="coral">SERVER</span>
-<span class="dim">─────────────────────────────────┼──────────────────</span>
+<span class="dim">-------------------------------------+------------------</span>
                                  <span class="dim">|</span>
  Markdown files  ─┐              <span class="dim">|</span>
  Claude sessions ─┤─ TF-IDF     <span class="dim">|</span>
@@ -571,27 +391,125 @@ footer a:hover { color: var(--accent); }
 <!-- ═══════ CTA ═══════ -->
 <section class="cta-section" id="early-access">
   <div class="container">
-    <p class="section-tag">Early Access</p>
-    <h2 class="section-title">See your mind.<br>Find minds like yours.</h2>
-    <p class="section-desc">We're building the first knowledge networking protocol. Be among the first to try it.</p>
+    <p class="section-tag" data-i18n="cta_tag">Early Access</p>
+    <h2 class="section-title" data-i18n="cta_title">See your mind.<br>Find minds like yours.</h2>
+    <p class="section-desc" data-i18n="cta_desc">We're building the first knowledge networking protocol. Be among the first to try it.</p>
     <form class="email-form" action="https://formspree.io/f/placeholder" method="POST">
-      <input type="email" name="email" placeholder="your@email.com" required>
-      <button type="submit">Get Access</button>
+      <input type="email" name="email" data-i18n-placeholder="email_placeholder" placeholder="your@email.com" required>
+      <button type="submit" data-i18n="cta_btn">Get Access</button>
     </form>
     <a href="https://github.com/TimmyZinin/friends" target="_blank" class="github-cta">
       <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      Star the repo on GitHub
+      <span data-i18n="cta_github_full">Star the repo on GitHub</span>
     </a>
   </div>
 </section>
 
 <!-- ═══════ FOOTER ═══════ -->
 <footer>
-  <p>Built by <a href="https://github.com/TimmyZinin">Tim Zinin</a> & Denis Govorunov</p>
-  <p style="margin-top:8px; opacity:0.5;">Friends is open-source. <a href="https://github.com/TimmyZinin/friends">View on GitHub</a></p>
+  <p data-i18n="footer_built">Built by <a href="https://github.com/TimmyZinin">Tim Zinin</a> &amp; Denis Govorunov</p>
+  <p style="margin-top:8px; opacity:0.5;" data-i18n="footer_os">Friends is open-source. <a href="https://github.com/TimmyZinin/friends">View on GitHub</a></p>
 </footer>
 
 <script>
+// ═══════════════════════════════════════
+// i18n — English / Russian
+// ═══════════════════════════════════════
+const I18N = {
+  en: {
+    hero_tag: 'Knowledge Networking Protocol',
+    hero_title: 'Find the <em>friend</em> you didn\'t know existed',
+    hero_sub: 'No photos. No bios. No swiping. Match people by how they think — extracted from their markdown files and AI conversations.',
+    cta_access: 'Get Early Access',
+    cta_github: 'Star on GitHub',
+    scroll_hint: 'scroll to explore',
+    demo_label: 'Demo Profile',
+    how_tag: 'How It Works',
+    how_title: 'Three steps.<br>Zero friction.',
+    how_desc: 'Install a skill. See your mind. Find minds like yours.',
+    step1_title: 'Install the skill',
+    step1_text: 'Add <code>/friends</code> to your Claude Code session. One command. No signup, no app store, no credit card.',
+    step2_title: 'It reads your files locally',
+    step2_text: 'The skill scans your markdown files on your device. Extracts topic tags. Encodes them into a Bloom filter. Your files never leave your machine.',
+    step3_title: 'See your graph',
+    step3_text: 'An interactive map of minds that resonate with yours. Click a node. See their topics. Connect via Telegram. Start talking.',
+    priv_tag: 'Privacy Architecture',
+    priv_title: 'Your files stay<br>on your device.',
+    priv_text: '<p>Topic extraction and encoding happen <span class="highlight">entirely on your device</span>. The matching server receives only a <span class="highlight">Bloom filter</span> — a fixed-size bit array that cannot be reversed to recover your original topics.</p><br><p>The server does not see, store, or process your files, text, or raw data. It computes similarity scores on compact bit arrays and returns your matches. That\'s it.</p><br><p>Your identity is secured by an Ed25519 keypair generated locally. Only you can update your profile. The private key never leaves your machine.</p>',
+    cta_tag: 'Early Access',
+    cta_title: 'See your mind.<br>Find minds like yours.',
+    cta_desc: 'We\'re building the first knowledge networking protocol. Be among the first to try it.',
+    email_placeholder: 'your@email.com',
+    cta_btn: 'Get Access',
+    cta_github_full: 'Star the repo on GitHub',
+    footer_built: 'Built by <a href="https://github.com/TimmyZinin">Tim Zinin</a> &amp; Denis Govorunov',
+    footer_os: 'Friends is open-source. <a href="https://github.com/TimmyZinin/friends">View on GitHub</a>',
+    you_name: 'You'
+  },
+  ru: {
+    hero_tag: 'Протокол нетворкинга по знаниям',
+    hero_title: 'Найди <em>друга</em>, о котором ты не знал',
+    hero_sub: 'Без фото. Без анкет. Без свайпов. Матчинг по тому, как ты думаешь — из твоих markdown-файлов и AI-диалогов.',
+    cta_access: 'Ранний доступ',
+    cta_github: 'GitHub',
+    scroll_hint: 'листай вниз',
+    demo_label: 'Демо-профиль',
+    how_tag: 'Как это работает',
+    how_title: 'Три шага.<br>Без барьеров.',
+    how_desc: 'Установи скилл. Увидь свой разум. Найди похожих.',
+    step1_title: 'Установи скилл',
+    step1_text: 'Добавь <code>/friends</code> в Claude Code. Одна команда. Без регистрации, без магазина приложений, без карты.',
+    step2_title: 'Он читает файлы локально',
+    step2_text: 'Скилл сканирует markdown-файлы на твоём устройстве. Извлекает теги тем. Кодирует в фильтр Блума. Файлы не покидают машину.',
+    step3_title: 'Смотри свой граф',
+    step3_text: 'Интерактивная карта разумов, резонирующих с твоим. Кликни на узел. Посмотри темы. Свяжись в Telegram. Начни общаться.',
+    priv_tag: 'Архитектура приватности',
+    priv_title: 'Твои файлы остаются<br>на твоём устройстве.',
+    priv_text: '<p>Извлечение тем и кодирование происходят <span class="highlight">полностью на твоём устройстве</span>. Сервер получает только <span class="highlight">фильтр Блума</span> — битовый массив фиксированного размера, который невозможно обратить в исходные темы.</p><br><p>Сервер не видит, не хранит и не обрабатывает твои файлы, текст или сырые данные. Он вычисляет сходство по компактным битовым массивам и возвращает совпадения. Всё.</p><br><p>Твоя идентичность защищена парой ключей Ed25519, сгенерированной локально. Только ты можешь обновить свой профиль. Приватный ключ никогда не покидает машину.</p>',
+    cta_tag: 'Ранний доступ',
+    cta_title: 'Увидь свой разум.<br>Найди похожих.',
+    cta_desc: 'Мы строим первый протокол нетворкинга по знаниям. Будь среди первых.',
+    email_placeholder: 'ваш@email.com',
+    cta_btn: 'Получить доступ',
+    cta_github_full: 'Звезда на GitHub',
+    footer_built: 'Создано: <a href="https://github.com/TimmyZinin">Тим Зинин</a> и Денис Говорунов',
+    footer_os: 'Friends — open-source. <a href="https://github.com/TimmyZinin/friends">Смотреть на GitHub</a>',
+    you_name: 'Ты'
+  }
+};
+
+let currentLang = localStorage.getItem('friends-lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('friends-lang', lang);
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('lang', lang);
+
+  const strings = I18N[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (strings[key]) el.innerHTML = strings[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (strings[key]) el.setAttribute('placeholder', strings[key]);
+  });
+
+  // Update "You" node label
+  const youLabel = document.querySelector('.you-label');
+  if (youLabel) youLabel.textContent = strings.you_name;
+
+  // Update lang buttons
+  document.querySelectorAll('[data-lang-btn]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang-btn') === lang);
+  });
+}
+
+document.querySelectorAll('[data-lang-btn]').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang-btn')));
+});
+
 // ═══════════════════════════════════════
 // D3.js Force-Directed Knowledge Graph
 // ═══════════════════════════════════════
@@ -612,13 +530,10 @@ const PROFILES = [
   { id:"d12", name:"Rashid A.", topics:["compiler design","LLVM","music production"], tg:"@demo", group:1 }
 ];
 
-// Generate links with varying strength (similarity)
 const links = [];
 PROFILES.forEach((p, i) => {
   if (p.isUser) return;
-  // Connect everyone to "You" with random strength
   links.push({ source: "you", target: p.id, strength: 0.3 + Math.random() * 0.7 });
-  // Some inter-node connections within same group
   PROFILES.forEach((q, j) => {
     if (j <= i || q.isUser) return;
     if (p.group === q.group && Math.random() > 0.4) {
@@ -627,108 +542,97 @@ PROFILES.forEach((p, i) => {
   });
 });
 
-const groupColors = {
-  0: "#00D4FF",
-  1: "#c5380e",
-  2: "#e6a817",
-  3: "#6b5ce7"
-};
+const groupColors = { 0: "#00D4FF", 1: "#c5380e", 2: "#e6a817", 3: "#6b5ce7" };
 
 const svg = d3.select("#graph-canvas");
-const width = window.innerWidth;
-const height = window.innerHeight;
-
+let width = window.innerWidth;
+let height = window.innerHeight;
 svg.attr("width", width).attr("height", height);
 
-// Defs for glow
 const defs = svg.append("defs");
-const filter = defs.append("filter").attr("id", "glow");
-filter.append("feGaussianBlur").attr("stdDeviation", "4").attr("result", "coloredBlur");
-const feMerge = filter.append("feMerge");
+const glowFilter = defs.append("filter").attr("id", "glow");
+glowFilter.append("feGaussianBlur").attr("stdDeviation", "4").attr("result", "coloredBlur");
+const feMerge = glowFilter.append("feMerge");
 feMerge.append("feMergeNode").attr("in", "coloredBlur");
 feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 
+// "Dead zone" — radial force pushes nodes AWAY from hero text center
+const centerX = width / 2;
+const centerY = height * 0.42;
+const deadZoneRadius = Math.min(width, height) * 0.28;
+
+function deadZoneForce(alpha) {
+  PROFILES.forEach(d => {
+    const dx = d.x - centerX;
+    const dy = d.y - centerY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < deadZoneRadius && !d.isUser) {
+      const pushStrength = (deadZoneRadius - dist) / deadZoneRadius * 0.15 * alpha;
+      const angle = Math.atan2(dy, dx);
+      d.vx += Math.cos(angle) * pushStrength * deadZoneRadius;
+      d.vy += Math.sin(angle) * pushStrength * deadZoneRadius;
+    }
+    // Keep "You" node hidden behind text — push it to bottom-center
+    if (d.isUser) {
+      d.x = centerX;
+      d.y = centerY;
+    }
+  });
+}
+
 const simulation = d3.forceSimulation(PROFILES)
-  .force("link", d3.forceLink(links).id(d => d.id).distance(d => 120 + (1 - d.strength) * 100).strength(d => d.strength * 0.3))
-  .force("charge", d3.forceManyBody().strength(-300))
-  .force("center", d3.forceCenter(width / 2, height * 0.55))
-  .force("collision", d3.forceCollide().radius(40))
-  .alphaDecay(0.008);
+  .force("link", d3.forceLink(links).id(d => d.id).distance(d => 140 + (1 - d.strength) * 120).strength(d => d.strength * 0.25))
+  .force("charge", d3.forceManyBody().strength(-350))
+  .force("center", d3.forceCenter(centerX, centerY))
+  .force("collision", d3.forceCollide().radius(45))
+  .force("deadzone", deadZoneForce)
+  .alphaDecay(0.006);
 
-// Links
-const link = svg.append("g")
-  .selectAll("line")
-  .data(links)
-  .join("line")
+const link = svg.append("g").selectAll("line").data(links).join("line")
   .attr("stroke", d => {
-    const c = groupColors[PROFILES.find(p => p.id === (typeof d.source === 'object' ? d.source.id : d.source))?.group || 1];
-    return c;
+    const src = typeof d.source === 'object' ? d.source : PROFILES.find(p => p.id === d.source);
+    return groupColors[src?.group || 1];
   })
-  .attr("stroke-opacity", d => d.strength * 0.15)
-  .attr("stroke-width", d => d.strength * 2);
+  .attr("stroke-opacity", d => d.strength * 0.12)
+  .attr("stroke-width", d => d.strength * 1.5);
 
-// Nodes
-const node = svg.append("g")
-  .selectAll("g")
-  .data(PROFILES)
-  .join("g")
-  .style("cursor", "pointer");
+const node = svg.append("g").selectAll("g").data(PROFILES).join("g")
+  .style("cursor", d => d.isUser ? "default" : "pointer")
+  .style("opacity", d => d.isUser ? 0 : 1); // Hide "You" node (it's behind text)
 
-// Outer glow circle
+// Outer glow
 node.append("circle")
-  .attr("r", d => d.isUser ? 28 : 14 + d.topics.length * 2)
+  .attr("r", d => d.isUser ? 0 : 16 + d.topics.length * 2)
   .attr("fill", d => groupColors[d.group])
-  .attr("opacity", 0.08)
+  .attr("opacity", 0.06)
   .attr("filter", "url(#glow)");
 
 // Main circle
 node.append("circle")
-  .attr("r", d => d.isUser ? 18 : 8 + d.topics.length)
+  .attr("r", d => d.isUser ? 0 : 7 + d.topics.length)
   .attr("fill", d => groupColors[d.group])
-  .attr("opacity", d => d.isUser ? 1 : 0.7)
+  .attr("opacity", 0.75)
   .attr("filter", "url(#glow)");
 
 // Inner bright dot
 node.append("circle")
-  .attr("r", d => d.isUser ? 6 : 3)
+  .attr("r", d => d.isUser ? 0 : 2.5)
   .attr("fill", "#fff")
   .attr("opacity", 0.9);
 
 // Labels
-node.append("text")
+node.filter(d => !d.isUser).append("text")
   .text(d => d.name)
   .attr("font-family", "Space Grotesk, sans-serif")
-  .attr("font-size", d => d.isUser ? 14 : 11)
-  .attr("font-weight", d => d.isUser ? 700 : 500)
-  .attr("fill", d => d.isUser ? "#00D4FF" : "rgba(232,234,240,0.6)")
+  .attr("font-size", 11)
+  .attr("font-weight", 500)
+  .attr("fill", "rgba(232,234,240,0.5)")
   .attr("text-anchor", "middle")
-  .attr("dy", d => (d.isUser ? 18 : 8 + d.topics.length) + 16);
+  .attr("dy", d => (7 + d.topics.length) + 16);
 
-// Pulse animation for "You" node
-const youNode = node.filter(d => d.isUser);
-youNode.append("circle")
-  .attr("r", 18)
-  .attr("fill", "none")
-  .attr("stroke", "#00D4FF")
-  .attr("stroke-width", 1.5)
-  .attr("opacity", 0);
-
-function pulseYou() {
-  youNode.select("circle:last-of-type")
-    .attr("r", 18).attr("opacity", 0.6)
-    .transition().duration(2000).ease(d3.easeCubicOut)
-    .attr("r", 50).attr("opacity", 0)
-    .on("end", pulseYou);
-}
-pulseYou();
-
-// Tick
 simulation.on("tick", () => {
-  link
-    .attr("x1", d => d.source.x)
-    .attr("y1", d => d.source.y)
-    .attr("x2", d => d.target.x)
-    .attr("y2", d => d.target.y);
+  link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
   node.attr("transform", d => `translate(${d.x},${d.y})`);
 });
 
@@ -744,7 +648,6 @@ node.on("mouseenter", (event, d) => {
   popupTopics.innerHTML = d.topics.map(t => `<span class="topic-tag">${t}</span>`).join("");
   popupTg.textContent = d.tg ? `Telegram: ${d.tg}` : "";
   popup.classList.add("visible");
-
   const rect = event.currentTarget.getBoundingClientRect();
   const pw = popup.offsetWidth;
   let left = rect.left + rect.width / 2 - pw / 2;
@@ -755,54 +658,34 @@ node.on("mouseenter", (event, d) => {
   popup.style.left = left + "px";
   popup.style.top = top + "px";
 });
+node.on("mouseleave", () => popup.classList.remove("visible"));
 
-node.on("mouseleave", () => {
-  popup.classList.remove("visible");
-});
-
-// Resize
 window.addEventListener("resize", () => {
-  const w = window.innerWidth, h = window.innerHeight;
-  svg.attr("width", w).attr("height", h);
-  simulation.force("center", d3.forceCenter(w / 2, h / 2)).alpha(0.3).restart();
+  width = window.innerWidth; height = window.innerHeight;
+  svg.attr("width", width).attr("height", height);
+  simulation.force("center", d3.forceCenter(width / 2, height * 0.42)).alpha(0.3).restart();
 });
 
 // ═══════════════════════════════════════
 // GSAP Scroll Animations
 // ═══════════════════════════════════════
-
 gsap.registerPlugin(ScrollTrigger);
-
-// Hero entrance
 gsap.to(".hero-tag", { opacity: 1, y: 0, duration: 0.8, delay: 0.5 });
 gsap.fromTo(".hero h1", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, delay: 0.7 });
 gsap.fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, delay: 1.0 });
 gsap.fromTo(".hero-cta", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, delay: 1.2 });
 
-// Section reveals
 document.querySelectorAll(".section-tag, .section-title, .section-desc").forEach(el => {
-  gsap.fromTo(el, { opacity: 0, y: 24 }, {
-    opacity: 1, y: 0, duration: 0.7,
-    scrollTrigger: { trigger: el, start: "top 85%" }
-  });
+  gsap.fromTo(el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, scrollTrigger: { trigger: el, start: "top 85%" } });
 });
-
 document.querySelectorAll(".step").forEach((el, i) => {
-  gsap.fromTo(el, { opacity: 0, y: 30 }, {
-    opacity: 1, y: 0, duration: 0.6, delay: i * 0.15,
-    scrollTrigger: { trigger: el, start: "top 85%" }
-  });
+  gsap.fromTo(el, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, delay: i * 0.15, scrollTrigger: { trigger: el, start: "top 85%" } });
 });
+gsap.fromTo(".privacy-text", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, scrollTrigger: { trigger: ".privacy-text", start: "top 80%" } });
+gsap.fromTo(".arch-diagram", { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.8, scrollTrigger: { trigger: ".arch-diagram", start: "top 80%" } });
 
-gsap.fromTo(".privacy-text", { opacity: 0, x: -30 }, {
-  opacity: 1, x: 0, duration: 0.8,
-  scrollTrigger: { trigger: ".privacy-text", start: "top 80%" }
-});
-
-gsap.fromTo(".arch-diagram", { opacity: 0, x: 30 }, {
-  opacity: 1, x: 0, duration: 0.8,
-  scrollTrigger: { trigger: ".arch-diagram", start: "top 80%" }
-});
+// Apply saved language
+setLang(currentLang);
 </script>
 </body>
 </html>
