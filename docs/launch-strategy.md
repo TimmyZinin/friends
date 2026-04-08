@@ -64,7 +64,7 @@ Friends launches as an **open-source Claude Code skill** distributed through Git
 **Actions:**
 - [x] Create GitHub repo with SDD and expert panel
 - [ ] Build MVP landing page with interactive force-directed graph
-- [ ] Seed graph with 10-15 demo profiles (from public GitHub repos)
+- [ ] Seed graph with 10-15 synthetic demo profiles (fictional personas, clearly labeled, NOT from real users' repos)
 - [ ] Tim + Denis test with their own markdown files
 - [ ] Collect 3-5 screenshots of the graph for marketing
 
@@ -76,7 +76,7 @@ Friends launches as an **open-source Claude Code skill** distributed through Git
 3. 3-step "How it works": Install skill → Scan your files → See your graph
 4. Email capture: "Get early access"
 5. GitHub link: "Star the repo"
-6. Privacy section: "Your data never leaves your device"
+6. Privacy section: "Your files stay on your device. Only a Bloom filter (non-reversible) reaches the server."
 
 ### Phase 2: Alpha Launch (Days 4-7)
 
@@ -102,7 +102,7 @@ Friends launches as an **open-source Claude Code skill** distributed through Git
   - Tweet 1: The problem ("I spent 3 years in tech and the most interesting people I met were through random Slack conversations, not LinkedIn")
   - Tweet 2: The insight ("What if an AI could read your notes and find people who think like you?")
   - Tweet 3: The demo (graph screenshot/GIF)
-  - Tweet 4: The privacy angle ("Your data never leaves your device. The matching engine sees only encrypted fingerprints.")
+  - Tweet 4: The privacy angle ("Your files stay on your device. The server sees only a Bloom filter — a compact bit array it can't reverse into your content.")
   - Tweet 5: CTA ("Install the skill: /friends. Star the repo: github.com/TimmyZinin/friends")
 - LinkedIn post (professional angle): "What if your next co-founder was hiding in your Claude conversations?"
 - Reddit ClaudeAI subreddit: Technical deep-dive post
@@ -156,7 +156,7 @@ Friends launches as an **open-source Claude Code skill** distributed through Git
 
 ### Positioning Statement
 
-> Friends is a knowledge networking protocol that connects people based on how they think — not how they look. Install a Claude Code skill, and it builds a knowledge graph from your local files. Then it finds other minds that resonate with yours. Privacy-first: your data never leaves your device.
+> Friends is a knowledge networking protocol that connects people based on how they think — not how they look. Install a Claude Code skill, and it builds a knowledge graph from your local files. Then it finds other minds that resonate with yours. Privacy-first: your files stay on your device, the server sees only non-reversible Bloom filters.
 
 ### Key Messages
 

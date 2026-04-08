@@ -1,39 +1,43 @@
 # Friends
 
-**Find people who truly match you — not by photos, but by what you think about.**
+**Find the friend you didn't know existed.**
 
-Friends is a knowledge-graph-based matching protocol that connects people through their actual interests, thinking patterns, and life context — extracted from markdown files, AI conversations, and personal data sources.
+Friends is a knowledge networking protocol that connects people based on their intellectual fingerprint — extracted from markdown files and AI conversations. Not by photos, not by bios, not by swiping.
 
 ## How it works
 
-1. **Install the Claude Code skill** → `/friends`
-2. Your local data gets **encoded on your device** (zero-knowledge)
-3. Encrypted embeddings are sent to the **matching engine**
-4. You see a **live graph** of compatible people near you
-5. Click a node → see what they chose to share → connect via Telegram
+1. **Install the `/friends` skill** in Claude Code
+2. The skill **extracts topic tags** from your local markdown files (on your device)
+3. Tags are encoded into a **Bloom filter** (a compact, non-reversible representation)
+4. Only the Bloom filter is sent to the matching server — your files stay on your device
+5. You see a **live graph** of compatible people
+6. Click a node → see what they chose to share → connect via Telegram
 
-## Core Principles
+## Privacy
 
-- **Privacy-first**: All encoding happens client-side. The matching engine never sees raw data.
-- **No photos, no fake profiles**: Matching is based on knowledge graphs, not selfies.
-- **Opt-in depth**: Share as much or as little as you want. More data = better matches.
-- **Decentralization-ready**: Start centralized, migrate to blockchain when scale demands it.
+Topic extraction and encoding happen entirely on your device. The matching server receives only a Bloom filter — a fixed-size bit array that cannot be reversed to recover your original topics. The server does not see, store, or process your files, text, or raw data.
 
-## Data Sources (opt-in)
+See [docs/SDD.md](docs/SDD.md) for the full technical privacy architecture.
 
-- Markdown files (Claude sessions, notes, docs)
-- Wearables (Oura, Apple Health)
-- DNA tests (23andMe, etc.)
-- Blood work / health data
-- Location (proximity matching)
+## Data Sources (MVP)
+
+- Markdown files (`*.md`) — topics, interests, thinking patterns
+- Claude session history — conversation themes
+- Location (opt-in, city-level only)
 
 ## Architecture
 
-See [docs/SDD.md](docs/SDD.md) for the full System Design Document.
+See [docs/SDD.md](docs/SDD.md) for the System Design Document.
 
 ## Status
 
-🔬 Concept phase — Expert panel review in progress.
+🔬 Concept phase — MVP landing page in development.
+
+## Docs
+
+- [System Design Document](docs/SDD.md)
+- [Expert Panel Results](docs/expert-panel-results.md) — 35 ideas from brainstorm analyzed by 7-expert panel
+- [Launch Strategy](docs/launch-strategy.md) — 5-phase go-to-market plan
 
 ## Authors
 
